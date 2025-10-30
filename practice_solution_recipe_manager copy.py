@@ -39,6 +39,18 @@ class Cook:
             print(f"\tCook Time: {recipe.cook_time_minutes}")
             print(f"\tTotal Time: {recipe.prep_time_minutes + recipe.cook_time_minutes}")
 
+    def display_recipe_complexity(self):
+        count_of_simple_recipes = 0 
+        count_of_complex_recipes = 0
+        for recipe_obj in self.__recipes_list:
+            if len(recipe_obj.ingredients) <= 4:
+                count_of_simple_recipes += 1
+            elif len(recipe_obj.ingredients) > 4:
+                count_of_complex_recipes += 1
+        
+        print(f"{self.name} knows {count_of_simple_recipes} simple recipe(s) and {count_of_complex_recipes} complex recipe(s)")
+        
+
 class ExpertCook(Cook):
     def __init__(self, name, training_location): 
         super().__init__(name)
@@ -76,21 +88,40 @@ chocolate_cake = Recipe("Chocolate Cake", ["flour", "cocoa powder", "eggs", "sug
 beef_stew = Recipe("Beef Stew", ["beef", "potatoes", "carrots", "onions", "beef broth"], 15, 105)
 
 recipe_list = [spaghetti, salad, pizza, chicken_curry, pancakes, chocolate_cake, beef_stew]
+cooks_list = []
+while True:
+    cook_name = input("Enter a cook's name: ")
 
-# Create a cook and an expert cook
-alice = Cook("Alice")
-bob = ExpertCook("Bob", "Gordan Ramsay's Boot Camp")
+    while True:
+        cook_type = input(f"What type of cook is {cook_name}? (enter normal or expert): ").strip().lower()
+        if cook_type == 'normal':
+            cook_obj = Cook(cook_name)
+            break
+        elif cook_type == 'expert':
+            training_loc = input(f"Where was {cook_name} trained? ")
+            cook_obj = ExpertCook(cook_name, training_loc)
+            break
+        else:
+            print("Not a valid cook type! Please enter normal or expert.\n")
+    
+    # outside of the inner loop
+    cooks_list.append(cook_obj)
+    print(f"{cook_name} has now been entered as a cook.")
 
-cooks_list = [alice, bob]
+    add_another_cook = input("Want to enter another cook? Enter 'Y' (or anything else) to keep going. Enter 'N' to stop: ").lower()
+
+    if add_another_cook == 'n':
+        break
 
 for cook in cooks_list:
-    # this means it will continue to try as long as the cook doesn't have 2 recipes
-    # good for catching the case where you tried to add 2 recipes, but accidentaly add 2 of the same one.
+    # this means it will continue to try as long as the cook doesn't have 3 recipes
+    # good for catching the case where you tried to add 3 recipes, but accidentaly add 2 of the same one.
     # notice I'm using a getter to check the list because the recipes list is private.
-    while len(cook.get_recipes_list()) < 2: 
+    while len(cook.get_recipes_list()) < 3: 
         cook.learn_recipe(random.choice(recipe_list))
 
 for cook in cooks_list:
     cook.display_recipes() # run display on each of the cook/expertcooks that were made
+    print() # just prints an extra space
+    cook.display_recipe_complexity()
     print() # just adds an extra space
-    
